@@ -1,14 +1,12 @@
-﻿using Microsoft.VisualBasic.CompilerServices;
-using System;
-using System.Security.Cryptography.X509Certificates;
+﻿using System;
 
-namespace ray_tracer
+namespace ray_tracer.RayMath
 {
     public class Tuple : IEquatable<Tuple>
     {
-        public float x, y, z, w;
+        public double x, y, z, w;
 
-        protected Tuple(float x, float y, float z, float w) {
+        protected Tuple(double x, double y, double z, double w) {
             this.x = x;
             this.y = y;
             this.z = z;
@@ -34,13 +32,18 @@ namespace ray_tracer
             return HashCode.Combine(x, y, z, w);
         }
 
+        public override string ToString()
+        {
+            return string.Format("[{0},{1},{2}]", x, y, z);
+        }
+
         public static bool operator ==(Tuple a, Tuple b) => a.Equals(b);
         public static bool operator !=(Tuple a, Tuple b) => !(a == b);
     }
 
     public class Point : Tuple
     {
-        public Point(float x, float y, float z) 
+        public Point(double x, double y, double z) 
             : base(x, y, z, 1) { }
 
         public static Point operator +(Point a, Vector b) =>
@@ -51,11 +54,19 @@ namespace ray_tracer
 
         public static Vector operator -(Point a, Point b) => // Sub point from point
             new Vector(a.x - b.x, a.y - b.y, a.z - b.z);
+
+        public static Point operator -(Point a) => new Point(-a.x, -a.y, -a.z);
+
+        public static Point operator *(Point a, double scalar)
+            => new Point(a.x * scalar, a.y * scalar, a.z * scalar);
+
+        public static Point operator /(Point a, double scalar)
+            => new Point(a.x / scalar, a.y / scalar, a.z / scalar);
     }
 
     public class Vector : Tuple
     {
-        public Vector(float x, float y, float z)
+        public Vector(double x, double y, double z)
             : base(x, y, z, 0) { }
 
         public static Point operator +(Vector a, Point b) =>
@@ -66,5 +77,31 @@ namespace ray_tracer
 
         public static Vector operator -(Vector a, Vector b) =>
             new Vector(a.x - b.x, a.y - b.y, a.z - b.z);
+
+        public static Vector operator -(Vector a) => new Vector(-a.x, -a.y, -a.z);
+
+        public static Vector operator *(Vector a, double scalar) 
+            => new Vector(a.x * scalar, a.y * scalar, a.z * scalar);
+
+        public static Vector operator /(Vector a, double scalar)
+            => new Vector(a.x / scalar, a.y / scalar, a.z / scalar);
+
+        // The magnitude of this vector based on Pythagoras' theorem.
+        public double Magnitude => Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2) + Math.Pow(z, 2));
+
+        // The normalised version of this vector (unit vector)
+        public Vector Unit => new Vector(x / Magnitude, y / Magnitude, z / Magnitude);
+
+        // Simple dot product of two vectors
+        public static double Dot(Vector a, Vector b) 
+            => a.x * b.x + a.y * b.y + a.z * b.z;
+
+        // Simple cross product of two vectors
+        public static Vector Cross(Vector a, Vector b)
+            => new Vector(
+                a.y * b.z - a.z * b.y, 
+                a.z * b.x - a.x * b.z, 
+                a.x * b.y - a.y * b.x
+                );
     }
 }
