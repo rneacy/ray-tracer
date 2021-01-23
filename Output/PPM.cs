@@ -13,17 +13,19 @@ namespace ray_tracer.Output
         public const int COLOURMAX = 255;
 
         // Converts canvas data into a viewable .ppm image.
-        public static void RenderCanvas(Canvas c)
+        public static void RenderCanvas(string fileName, Canvas c)
         {
+            string path = @"Output\" + fileName + ".ppm";
+
             string header =
                 string.Format("{0}\n{1} {2}\n{3}\n", MAGIC, c.Width, c.Height, COLOURMAX);
 
             System.IO.Directory.CreateDirectory(@"Output");
-            System.IO.File.WriteAllText(@"Output\meme.ppm", header);
+            System.IO.File.WriteAllText(path, header);
 
             int charsWritten = 0;
 
-            using StreamWriter sw = File.AppendText(@"Output\meme.ppm");
+            using StreamWriter sw = File.AppendText(path);
             for (int i = 0; i < c.Height; i++)
             {
                 string pixData = "";
